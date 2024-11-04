@@ -1,8 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.routes.js";
 import connectMongoDB from "./db/db.js";
 import cookieParser from "cookie-parser";
+
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
+
 
 dotenv.config();
 const PORT = process.env.PORT || 8000;
@@ -15,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
+app.use("/api/users", userRoutes)
 
 
 app.listen(PORT, () => {
