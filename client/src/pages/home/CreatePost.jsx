@@ -21,6 +21,9 @@ const CreatePost = () => {
 	} = useMutation({
 		mutationFn: async ({ text, img }) => {
 			try {
+				if (!text && !img) {
+					throw new Error("Please enter text or image");
+				}
 				const res = await fetch("/api/posts/create", {
 					method: "POST",
 					headers: {
