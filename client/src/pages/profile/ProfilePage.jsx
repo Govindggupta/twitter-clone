@@ -5,7 +5,7 @@ import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
 
-import { POSTS } from "../../utils/db/dummy";
+// import { POSTS } from "../../utils/db/dummy";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -53,9 +53,9 @@ const ProfilePage = () => {
 
 	const { isUpdatingProfile, updateProfile } = useUpdateUserProfile();
 
-	const isMyProfile = authUser._id === user?._id;
-	const memberSinceDate = formatMemberSinceDate(user?.createdAt);
-	const amIFollowing = authUser?.following.includes(user?._id);
+	const isMyProfile = authUser?.user._id === user?.user?._id;
+	const memberSinceDate = formatMemberSinceDate(user?.user?.createdAt);
+	const amIFollowing = authUser?.user?.following.includes(user?.user?._id);
 
 	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
@@ -87,8 +87,8 @@ const ProfilePage = () => {
 									<FaArrowLeft className='w-4 h-4' />
 								</Link>
 								<div className='flex flex-col'>
-									<p className='font-bold text-lg'>{user?.fullName}</p>
-									<span className='text-sm text-slate-500'>{POSTS?.length} posts</span>
+									<p className='font-bold text-lg'>{user?.user?.fullName}</p>
+									{/* <span className='text-sm text-slate-500'>{POSTS?.length} posts</span> */}
 								</div>
 							</div>
 							{/* COVER IMG */}
@@ -141,11 +141,17 @@ const ProfilePage = () => {
 								{!isMyProfile && (
 									<button
 										className='btn btn-outline rounded-full btn-sm'
-										onClick={() => follow(user?._id)}
+										onClick={() => follow(user?.user?._id)}
 									>
 										{isPending && "Loading..."}
 										{!isPending && amIFollowing && "Unfollow"}
 										{!isPending && !amIFollowing && "Follow"}
+										{
+											user?.user?.id === authUser?.user?._id && ""
+										}
+										
+										
+										
 									</button>
 								)}
 								{(coverImg || profileImg) && (
@@ -164,13 +170,13 @@ const ProfilePage = () => {
 
 							<div className='flex flex-col gap-4 mt-14 px-4'>
 								<div className='flex flex-col'>
-									<span className='font-bold text-lg'>{user?.fullName}</span>
-									<span className='text-sm text-slate-500'>@{user?.username}</span>
-									<span className='text-sm my-1'>{user?.bio}</span>
+									<span className='font-bold text-lg'>{user?.user?.fullName}</span>
+									<span className='text-sm text-slate-500'>@{user?.user?.username}</span>
+									<span className='text-sm my-1'>{user?.user?.bio}</span>
 								</div>
 
 								<div className='flex gap-2 flex-wrap'>
-									{user?.link && (
+									{user?.user?.link && (
 										<div className='flex gap-1 items-center '>
 											<>
 												<FaLink className='w-3 h-3 text-slate-500' />
@@ -181,7 +187,7 @@ const ProfilePage = () => {
 													className='text-sm text-blue-500 hover:underline'
 												>
 													{/* Updated this after recording the video. I forgot to update this while recording, sorry, thx. */}
-													{user?.link}
+													{user?.user?.link}
 												</a>
 											</>
 										</div>
@@ -193,11 +199,11 @@ const ProfilePage = () => {
 								</div>
 								<div className='flex gap-2'>
 									<div className='flex gap-1 items-center'>
-										<span className='font-bold text-xs'>{user?.following.length}</span>
+										<span className='font-bold text-xs'>{user?.user?.following?.length}</span>
 										<span className='text-slate-500 text-xs'>Following</span>
 									</div>
 									<div className='flex gap-1 items-center'>
-										<span className='font-bold text-xs'>{user?.followers.length}</span>
+										<span className='font-bold text-xs'>{user?.user?.followers?.length}</span>
 										<span className='text-slate-500 text-xs'>Followers</span>
 									</div>
 								</div>
@@ -231,4 +237,4 @@ const ProfilePage = () => {
 		</>
 	);
 };
-export default ProfilePage;
+export default ProfilePage;
