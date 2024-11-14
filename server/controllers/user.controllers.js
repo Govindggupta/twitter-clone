@@ -139,12 +139,12 @@ export const updateUser = async (req, res) => {
     }
     
     if(coverImg){
-      if (user.profileImg){
-        await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]);
+      if (user.coverImg){
+        await cloudinary.uploader.destroy(user.coverImg.split("/").pop().split(".")[0]);
       }
 
       const uploadedResponse = await cloudinary.uploader.upload(coverImg)
-      profileImg = uploadedResponse.secure_url;
+      coverImg = uploadedResponse.secure_url;
     }
 
     user.username = username || user.username;
