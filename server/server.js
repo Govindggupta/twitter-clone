@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectMongoDB from "./db/db.js";
 import cookieParser from "cookie-parser";
 import {v2 as cloudinary} from "cloudinary";
+import path from "path";
 
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -22,6 +23,8 @@ const PORT = process.env.PORT || 8000;
 
 const app = express();
 
+const  __dirname = path.resolve();
+
 app.use(express.json({ limit: "5mb" })); // limit should not be to high 
 app.use(express.urlencoded({ extended: true }));
 
@@ -33,7 +36,13 @@ app.use("/api/posts", postRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/search", searchRoutes);
 
+if  (process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname, "/client/dist")));
 
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
