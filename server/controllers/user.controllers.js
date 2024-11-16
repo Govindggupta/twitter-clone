@@ -1,9 +1,9 @@
-// model 
+// model
 import User from "../models/user.models.js";
 import Notification from "../models/notification.model.js";
 
 import bcrypt from "bcryptjs";
-import {v2 as cloudinary} from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
 export const getUserProfile = async (req, res) => {
   const { username } = req.params;
@@ -90,16 +90,9 @@ export const getSuggestedUsers = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const {
-    username,
-    email,
-    fullname,
-    currentPassword,
-    newPassword,
-    bio,
-    link,
-  } = req.body;
-  let {profileImg, coverImg} = req.body;
+  const { username, email, fullName, currentPassword, newPassword, bio, link } =
+    req.body;
+  let { profileImg, coverImg } = req.body;
 
   const userId = req.user._id;
 
@@ -107,7 +100,10 @@ export const updateUser = async (req, res) => {
     let user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    if ((!newPassword && currentPassword) ||(newPassword && !currentPassword)){
+    if (
+      (!newPassword && currentPassword) ||
+      (newPassword && !currentPassword)
+    ) {
       return res
         .status(400)
         .json({ error: "Please provide both current and new password" });
@@ -130,39 +126,76 @@ export const updateUser = async (req, res) => {
       user.password = await bcrypt.hash(newPassword, salt);
     }
 
-    if(profileImg){
-      if (user.profileImg){
-        await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]);
+    if (profileImg) {
+      if (user.profileImg) {
+        await cloudinary.uploader.destroy(
+          user.profileImg.split("/").pop().split(".")[0]
+        );
       }
-      const uploadedResponse = await cloudinary.uploader.upload(profileImg)
+      const uploadedResponse = await cloudinary.uploader.upload(profileImg);
       profileImg = uploadedResponse.secure_url;
     }
-    
-    if(coverImg){
-      if (user.coverImg){
-        await cloudinary.uploader.destroy(user.coverImg.split("/").pop().split(".")[0]);
+
+    if (coverImg) {
+      if (user.coverImg) {
+        await cloudinary.uploader.destroy(
+          user.coverImg.split("/").pop().split(".")[0]
+        );
       }
 
-      const uploadedResponse = await cloudinary.uploader.upload(coverImg)
+      const uploadedResponse = await cloudinary.uploader.upload(coverImg);
       coverImg = uploadedResponse.secure_url;
     }
 
     user.username = username || user.username;
     user.email = email || user.email;
-    user.fullName = fullname || user.fullName;
+    user.fullName = fullName || user.fullName;
     user.bio = bio || user.bio;
-    user.link = link || user.link;  
+    user.link = link || user.link;
     user.profileImg = profileImg || user.profileImg;
-    user.coverImg = coverImg || user.coverImg;  
+    user.coverImg = coverImg || user.coverImg;
 
     user = await user.save();
 
     user.password = null;
 
     return res.status(200).json({ user });
-
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
     console.log(error.message);
+  }
+};
+
+export const getUserfollowing = async (req, res) => {
+  try {
+    const { user } = req.params; 
+
+    const userData = await User.findOne({ username: user }).populate('following', 'username fullName profileImg' );
+
+    if (!userData) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(userData.following);
+  } catch (error) {
+    console.error("Error occurred:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const getUserfollowers = async (req, res) => {
+  try {
+    const { user } = req.params;
+
+    const userData = await User.findOne({ username: user }) .populate('followers', 'username fullName profileImg');
+
+    if (!userData) {
+      return res.status(404).json({ error: "User not found" });
+    };
+
+    res.status(200).json(userData.followers);
+  } catch (error) {
+    console.error("Error occurred:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
