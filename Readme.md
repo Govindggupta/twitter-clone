@@ -67,3 +67,5 @@ A full-stack clone of Twitter (now known as X) using the MERN stack. This projec
 - To start the **frontend**, open a new terminal, navigate to the client folder, and run:
 
   `npm run dev`
+
+hello world 
